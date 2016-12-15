@@ -111,9 +111,9 @@ prompt_for_yes_or_exit "Are you sure you want to do this?" $implicit_yes
 # script exits, even if an error occurs
 function iptables_delete_rule() {
     iptables -D INPUT $iptable_rule_args
-    $v4=$?
+    v4=$?
     ip6tables -D INPUT $iptable_rule_args
-    $v6=$?
+    v6=$?
     if [ $v4 -ne 0 ]; then
                 return $v4
     else
