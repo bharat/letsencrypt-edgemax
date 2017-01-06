@@ -143,7 +143,7 @@ if [ "$test" == "true" ]; then
     echo Using staging ACME server!
 fi
 
-python acme_tiny.py --account-key "$le_account_key" --csr "$domain_csr" \
+python $install_dir/acme_tiny.py --account-key "$le_account_key" --csr "$domain_csr" \
     --acme-dir "$challenge_dir" $acme_tiny_ca > "$signed_cert" \
         || echo_and_exit "Error: could not issue certificate!"
 
