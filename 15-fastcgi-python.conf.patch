@@ -1,0 +1,11 @@
+--- /etc/lighttpd/conf-enabled/15-fastcgi-python.conf
++++ 15-fastcgi-python.conf
+@@ -3,7 +3,7 @@
+ # debugflag should be empty or " -d"
+ var.gui.debugflag = ""
+ 
+-$HTTP["url"] =~ "^/(?!lib|media|ws|tests)" {
++$HTTP["url"] =~ "^/(?!lib|media|ws|tests|\.well-known)" {
+ 	fastcgi.debug = 0
+ 	fastcgi.server = (
+ 		"/" => (
