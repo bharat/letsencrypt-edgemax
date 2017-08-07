@@ -15,7 +15,7 @@ The installer script does a few things to the router's filesystem and configurat
 * The configuration nodes `service gui cert-file` and `service gui ca-file` are modified to point to the issued SSL certificate and Let's Encrypt intermediate CA certificate, respectively.
 
 ## Requirements
-* An Ubiquiti router running EdgeOS v1.8.5. Earlier versions will definitely not work, later versions might work.
+* An Ubiquiti router running EdgeOS v1.9.x. Earlier versions will definitely not work, later versions might work.
 * A fully qualified domain name (FQDN) with an A record pointing to your router.
 * SSH access to your router.
 
@@ -23,28 +23,48 @@ The installer script does a few things to the router's filesystem and configurat
 1. Open an SSH session into your router.
 2. These scripts require that `patch` be installed, and unfortunately, it is not installed in the standard EdgeOS distribution. Fortunately, EdgeOS provides a way to install packages from Debian Wheezy's apt-get repositories. Run the following commands to enable apt-get access:
 
-     ```
+    ```
     configure
     set system package repository wheezy components 'main contrib non-free'
     set system package repository wheezy distribution wheezy 
     set system package repository wheezy url http://http.us.debian.org/debian
-    set system package repository wheezy-security components main
-    set system package repository wheezy-security distribution wheezy/updates
-    set system package repository wheezy-security url http://security.debian.org
     commit
     save
     exit
-    
+
     sudo apt-get update
     ```
-    
+
     (Command listing from [Ubiquiti's knowledge base](https://help.ubnt.com/hc/en-us/articles/205202560-EdgeMAX-Add-other-Debian-packages-to-EdgeOS))
+3. Setup patch to be autoinstalled during bootup. Create a file called `/config/scripts/post-config.d/install_my_packages.sh` with the following content
+
+    ```
+    #!/bin/bash
+
+    doneit='/var/lib/my_packages'
+    packages='patch'
+
+    if [ -e $doneit ]; then
+        exit 0;
+    fi
+
+    apt-get update
+    apt-get install -y $packages 
+    if [ $? == 0 ]; then 
+        echo package install successful 
+        touch $doneit 
+    else 
+        echo package install failed 
+    fi 
+    exit 0
+    ```
+    (Command listing from [Ubiquiti's knowledge base](https://help.ubnt.com/hc/en-us/articles/204961814-EdgeMAX-Are-my-changes-lost-when-I-upgrade-the-firmware-image-)
 3. Install patch by running the following:
 
     ```
     sudo apt-get install patch
     ```
-    
+
     Answer Yes to any prompts that come up.
 4. Now you need to actually download the installation scripts. I'm going to show you how to do so using `git`, but if you want to use a different way, that's perfectly fine as well; the scripts themselves don't have a dependency on `git` being installed.
 
@@ -66,6 +86,18 @@ The installer script does a few things to the router's filesystem and configurat
   ```
   sudo ./install.sh
   ```
+6. Setup auto-renew
+
+  ```
+  configure
+  set system task-scheduler task renew-https-cert interval 3d
+  set system task-scheduler task renew-https-cert executable arguments "-y"
+  set system task-scheduler task renew-https-cert executable path "/config/letsencrypt/renew.sh"
+  commit
+  save
+  exit
+  ```
+  (Command listing from [letsencrypt-edgemax#12](https://github.com/mgbowen/letsencrypt-edgemax/issues/12)
   
   You'll be prompted a few times for information. These prompts should be fairly self-explanatory. It will then perform all the necessary changes to your router and, after it's done executing, should leave you with a Web GUI that serves a valid Let's Encrypt SSL certificate!
 
