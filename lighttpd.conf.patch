@@ -1,11 +1,13 @@
 --- /etc/lighttpd/lighttpd.conf
 +++ lighttpd.conf
-@@ -29,7 +29,7 @@
- include "conf-enabled/15-fastcgi-php.conf"
+@@ -29,6 +29,10 @@
+ include "conf-enabled/10-ssl.conf"
+ include "conf-enabled/15-fastcgi-python.conf"
  
- url.rewrite-once = (
--	"^(/(lib|media|ws|tests)/.*)" => "$0",
-+	"^(/(lib|media|ws|tests|\.well-known)/.*)" => "$0",
- 	"^/([^\?]+)(\?(.*))?$" => "/index.php/$1?$3"
- )
- 
++url.rewrite-once = (
++    "^(/(\.well-known)/.*)" => "$0"
++)
++
+ websocket.server = (
+     "/ws/stats" => ( "host" => "/tmp/ubnt.socket.statsd",
+                      "port" => "1" ),
