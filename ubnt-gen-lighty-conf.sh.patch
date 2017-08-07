@@ -1,11 +1,38 @@
 --- /usr/sbin/ubnt-gen-lighty-conf.sh
 +++ ubnt-gen-lighty-conf.sh
-@@ -101,7 +101,7 @@
+@@ -101,20 +101,22 @@
  cat <<EOF
  
  \$HTTP["scheme"] == "http" {
--    \$HTTP["url"] !~ "^/index.php/error/" {
-+    \$HTTP["url"] !~ "^((/index.php/error/)|(/\.well-known/.*))" {
-         \$HTTP["host"] =~ "^([^\\:]+)(\\:.*)?$" {
-             url.redirect = (
-                 "^(.*)$" => "https://%1:$sport\$1"
+-    # IPv4 redirect
+-    \$HTTP["host"] !~ "\[.*\]" {
+-        \$HTTP["host"] =~ "^([^\\:]+)(\\:.*)?$" {
+-            url.redirect = (
+-                "^(.*)$" => "https://%1:$sport\$1"
+-            )
++    \$HTTP["url"] !~ "/\.well-known/.*" {
++        # IPv4 redirect
++        \$HTTP["host"] !~ "\[.*\]" {                                                                                       
++            \$HTTP["host"] =~ "^([^\\:]+)(\\:.*)?$" {
++                url.redirect = (
++                    "^(.*)$" => "https://%1:$sport\$1"
++                )
++            }
+         }
+-    }
+-    # IPv6 redirect
+-    \$HTTP["host"] =~ "\[.*\]" {
+-        \$HTTP["host"] =~ "^([^]]+)(.)(\:.*)?$" {
+-            url.redirect = (
+-                "^(.*)$" => "https://%1%2:$sport\$1"
+-            )
++        # IPv6 redirect
++        \$HTTP["host"] =~ "\[.*\]" {                                                                                       
++            \$HTTP["host"] =~ "^([^]]+)(.)(\:.*)?$" {
++                url.redirect = (
++                    "^(.*)$" => "https://%1%2:$sport\$1"
++                )
++            }
+         }
+     }
+ }
