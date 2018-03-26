@@ -1,16 +1,16 @@
 #!/bin/bash
 
 function ensure_version() {
-    # Make sure EdgeOS firmware is version higher than 1.8.5 (Build 4884695)
+    # Make sure EdgeOS firmware is version higher than 1.9.7 (Build 5001798)
     if [ "$ignore_version_err" != "true" ]; then
 
         build_id=$(vbash -ic "show version" | grep "Build ID:" | awk -F' ' '{print $3}')
-        local version=$build_id min_version=4884695
+        local version=$build_id min_version=5001798
         local winner=$(echo -e "$version\n$min_version" | sort -nr | head -1)
 
         if [ "$winner" != "$version" ]; then
             echo 
-            echo ERROR: This script is designed to use with EdgeOS firmware v1.8.5 \(Build 4884695\)
+            echo ERROR: This script is designed to use with EdgeOS firmware v1.9.7 \(Build 4884695\)
             echo or higher. It will not function properly with firmware older than this, but it may
             echo function with firmware newer than this. In either case, this script may not work on
             echo your system.

@@ -48,8 +48,8 @@ curl "$acme_tiny_url" > $install_dir/acme_tiny.py
 patch_if_necessary /usr/sbin/ubnt-gen-lighty-conf.sh ubnt-gen-lighty-conf.sh.patch \
     || echo_and_exit "Error: could not patch ubnt-gen-lighty-conf.sh!"
 
-patch_if_necessary /etc/lighttpd/lighttpd.conf lighttpd.conf.patch \
-    || echo_and_exit "Error: could not patch ubnt-gen-lighty-conf.sh!"
+patch_if_necessary /etc/lighttpd/conf-enabled/15-fastcgi-python.conf 15-fastcgi-python.conf.patch \
+    || echo_and_exit "Error: could not patch 15-fastcgi-python.conf.patch!"
 
 # Enter a Vyatta configure session for regenerating config files
 source /opt/vyatta/etc/functions/script-template
